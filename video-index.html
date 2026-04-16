@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>地平線 AI 影片需求盤點問卷</title>
+    
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入 React & ReactDOM (UMD 版) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- 引入 Babel Standalone (讓瀏覽器即時編譯 JSX) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- 內嵌 Icons (替換原本的 lucide-react 避免套件相依性問題) ---
+        const IconTarget = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>;
+        const IconFilm = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>;
+        const IconUsers = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const IconShieldAlert = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2-1 4-2 7-2 2.5 0 4.5 1 6.5 2a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>;
+        const IconSettings = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+        const IconDollarSign = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
+        const IconCheckCircle2 = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>;
+        const IconChevronRight = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+        const IconCheck = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>;
+        const IconDownload = ({className}) => <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>;
+
+        // --- 資料配置 ---
+        const SECTIONS = [
+          { id: 'purpose', title: '使用目的', icon: IconTarget, desc: '確認您的基本背景、影片用途與成效評估標準' },
+          { id: 'type', title: '影片類型', icon: IconFilm, desc: '盤點短影音與內部教材的具體規格需求' },
+          { id: 'assets', title: '素材與人物', icon: IconUsers, desc: '評估現有素材狀況與人物出鏡、AI 生成接受度' },
+          { id: 'risk', title: '風險與授權', icon: IconShieldAlert, desc: '確認版權、肖像權與合規審核機制' },
+          { id: 'process', title: '流程與工具', icon: IconSettings, desc: '盤點現有工具熟悉度與預期製作流程' },
+          { id: 'budget', title: '預算與試點', icon: IconDollarSign, desc: '收斂預算規劃與第一個試點專案' }
+        ];
+
+        const QUESTIONS = {
+          purpose: [
+            { id: 'q1', type: 'radio', text: '1. 部門 / 單位', options: ['企劃', '行銷', '業務', '專案管理', '教育訓練', '行政', '其他'] },
+            { id: 'q2', type: 'radio', text: '2. 您的角色', options: ['決策者', '使用者', '提需求者', '審核者', '執行者', '其他'] },
+            { id: 'q3', type: 'checkbox', text: '3. 希望導入 AI 影片的主要原因', options: ['提升提案 / 招標效率', '降低影片製作成本', '加快內容產出速度', '提升內部訓練效率', '讓內容更吸引人', '測試 AI 應用可能性', '其他'] },
+            { id: 'q4', type: 'checkbox', text: '4. 目前最想做的是哪一類影片', options: ['短影音', '內部教材', 'SOP / 操作教學', '提案輔助說明影片', '活動紀錄 / 活動前導影片', '招標簡報輔助影片', '對外形象宣傳', '其他'] },
+            { id: 'q5', type: 'checkbox', text: '5. 主要優先順序 (請勾選前 3 名)', options: ['短影音', '內部教材', '提案 / 招標輔助', '對外宣傳', '其他'] },
+            { id: 'q6', type: 'checkbox', text: '6. 預期影片用途', options: ['內部觀看', '客戶簡報使用', '提案附件 / 現場播放', '官網', '社群平台', '廣告投放', 'LINE / EDM / 私訊發送', '其他'] },
+            { id: 'q39', type: 'checkbox', text: '39. 您如何判斷這次導入是否成功', options: ['影片產出速度變快', '成本下降', '同仁更容易做', '教材更容易更新', '提案表現更好', '宣傳效果更好', '風險更可控', '其他'] },
+            { id: 'q40', type: 'textarea', text: '40. 最希望優先解決的一件事', options: [] }
+          ],
+          type: [
+            { id: 'title1', type: 'header', text: '【短影音需求】' },
+            { id: 'q7', type: 'checkbox', text: '7. 短影音主要目的', options: ['吸引注意', '活動預告', '成果展示', '服務介紹', '品牌曝光', '招募 / 徵才', '案例分享', '其他'] },
+            { id: 'q8', type: 'checkbox', text: '8. 短影音主要發布平台', options: ['Facebook', 'Instagram', 'YouTube Shorts', 'TikTok', 'LINE', '官網', '提案簡報中播放', '其他'] },
+            { id: 'q9', type: 'radio', text: '9. 單支影片理想長度', options: ['5 秒內', '6–15 秒', '16–30 秒', '31–60 秒', '1 分鐘以上'] },
+            { id: 'q10', type: 'checkbox', text: '10. 短影音風格偏好', options: ['正式專業', '活潑吸睛', '科技感', '溫暖故事感', '企業穩重', '節奏快', '字卡資訊型', '旁白講解型', '人物出鏡型', '其他'] },
+            { id: 'q11', type: 'checkbox', text: '11. 希望 AI 幫忙的部分', options: ['腳本發想', '分鏡建議', '圖像生成', '影片片段生成', '字幕', '配音', '音樂', '剪輯', '套模板快速成片', '多版本改寫', '其他'] },
+            { id: 'title2', type: 'header', text: '【內部教材 / SOP 需求】' },
+            { id: 'q12', type: 'checkbox', text: '12. 教材用途', options: ['新人訓練', 'SOP 教學', '系統操作教學', '招標流程教育', '活動執行流程', '客訴 / 品質管理', '資安 / 合規宣導', '主管簡報說明', '其他'] },
+            { id: 'q13', type: 'checkbox', text: '13. 教材受眾', options: ['新進同仁', '專案人員', '行政人員', '業務人員', '主管', '跨部門共用', '外部合作夥伴', '其他'] },
+            { id: 'q14', type: 'radio', text: '14. 教材預計長度', options: ['30 秒內', '1–3 分鐘', '3–5 分鐘', '5–10 分鐘', '10 分鐘以上'] },
+            { id: 'q15', type: 'radio', text: '15. 教材更新頻率', options: ['一次性', '偶爾更新', '每月更新', '常常變動，需要快速改版', '尚未確定'] },
+            { id: 'q16', type: 'checkbox', text: '16. 教材形式偏好', options: ['螢幕錄影 + 字幕', '簡報轉影片', '真人講解', 'AI Avatar 講解', '圖文動畫', '流程圖 / 示意動畫', '混合型', '其他'] },
+            { id: 'q17', type: 'radio', text: '17. 是否需要多語版本', options: ['不需要', '中文即可', '中英雙語', '多語版本', '未來可能需要'] }
+          ],
+          assets: [
+            { id: 'title3', type: 'header', text: '【素材現況】' },
+            { id: 'q18', type: 'checkbox', text: '18. 目前已有的素材類型', options: ['公司簡報', '活動照片', '活動畫面影片', '官網圖片', '既有文案', '品牌識別素材（Logo / 色系 / 字體）', '講義 / SOP 文件', '講者照片 / 主管照片', '都沒有', '其他'] },
+            { id: 'q19', type: 'radio', text: '19. 素材來源狀況', options: ['全部是公司自有', '部分自有、部分外部抓取', '大多來自網路', '尚未整理', '不確定是否合法可商用'] },
+            { id: 'q20', type: 'radio', text: '20. 偏好的製作模式', options: ['沒素材，希望 AI 幫忙生', '有素材，希望 AI 協助整理與剪輯', '兩種都可能', '先用 AI 草稿，再改成正式版'] },
+            { id: 'q21', type: 'radio', text: '21. 是否可接受 AI 生成畫面', options: ['可以，先求快', '可以，但只限內部或測試', '可以，但不能有侵權疑慮', '不希望使用 AI 自動生成畫面', '不確定，想先了解風險'] },
+            { id: 'title4', type: 'header', text: '【人物 / 肖像 / 聲音】' },
+            { id: 'q22', type: 'radio', text: '22. 是否需要人物出鏡', options: ['不需要', '需要真人出鏡', '可接受 AI Avatar', '兩者都可', '尚未決定'] },
+            { id: 'q23', type: 'checkbox', text: '23. 可使用的人物素材', options: ['公司內部同仁', '主管', '外部講師', '活動現場參與者', '無人物素材', '其他'] },
+            { id: 'q24', type: 'radio', text: '24. 是否已取得可用授權', options: ['已取得', '部分已取得', '尚未取得', '不確定', '需協助建立授權流程'] },
+            { id: 'q25', type: 'radio', text: '25. 是否可接受 AI 配音 / 聲音克隆', options: ['可接受 AI 一般配音', '可接受真人聲音克隆', '不接受聲音克隆', '尚未評估'] }
+          ],
+          risk: [
+            { id: 'q26', type: 'checkbox', text: '26. 您最在意的風險是什麼', options: ['版權', '肖像權', '商用授權', '客戶 / 提案場合出現爭議', '平台條款不清楚', '內容不夠正確', '資料外流', '其他'] },
+            { id: 'q27', type: 'radio', text: '27. 使用場景的風險容忍度', options: ['高：可先試，再慢慢修正', '中：可接受有限風險，但要控管', '低：需盡量合法、可追溯、可稽核'] },
+            { id: 'q28', type: 'checkbox', text: '28. 是否會用於以下高敏感情境', options: ['正式招標提案', '大型客戶簡報', '對外正式宣傳', '廣告投放', '長期品牌形象', '都不會', '其他'] },
+            { id: 'q29', type: 'radio', text: '29. 是否需要保留素材來源與授權紀錄', options: ['需要', '視情況', '不需要', '不清楚這項用途'] },
+            { id: 'q30', type: 'radio', text: '30. 是否需要內部審核流程', options: ['不需要，個人可直接做', '部門主管審核', '法務 / 合約審核', '品牌 / 行銷審核', '多層審核', '尚未建立'] }
+          ],
+          process: [
+            { id: 'q31', type: 'radio', text: '31. 預計誰來製作', options: ['自己做', '內部同仁做', '指定窗口統一做', '外包 / 廠商做', 'AI 先做初稿，再人工修改'] },
+            { id: 'q32', type: 'checkbox', text: '32. 現有工具熟悉度', options: ['Canva', 'CapCut', 'PowerPoint', 'Premiere', 'DaVinci Resolve', '螢幕錄影工具', '完全沒有經驗', '其他'] },
+            { id: 'q33', type: 'radio', text: '33. 希望工具的使用門檻', options: ['非常簡單，幾乎不需學習', '可接受中等學習成本', '專業工具也可以，只要值得', '先求好用，再談進階'] },
+            { id: 'q34', type: 'checkbox', text: '34. 希望製作流程', options: ['文字輸入就成片', '模板套用快速出片', '既有素材拼接成片', '簡報直接轉影片', '螢幕錄影 + 後製', '分鏡設計後再做', '其他'] },
+            { id: 'q35', type: 'radio', text: '35. 單支影片可接受製作時間', options: ['10 分鐘內', '30 分鐘內', '半天內', '1 天內', '可接受較長時間，只要品質好'] }
+          ],
+          budget: [
+            { id: 'q36', type: 'radio', text: '36. 預算接受度', options: ['先免費試用', '低成本（月費型）', '可接受商用付費工具', '可接受企業版', '尚未決定'] },
+            { id: 'q37', type: 'radio', text: '37. 希望採用方式', options: ['單一工具即可', '兩到三種工具搭配', '先測試，之後再定標準工具', '希望建立公司標準流程'] },
+            { id: 'q38', type: 'checkbox', text: '38. 對導入成果的期待', options: ['先做出一支可用影片', '建立一套內部製作方法', '建立教材製作模板', '建立短影音快速產線', '建立合規與審核流程', '其他'] },
+            { id: 'q41', type: 'radio', text: '41. 若只能先做一個小試點，您最想先做哪個', options: ['15 秒短影音', '1 支內部教材', '1 支 SOP 教學影片', '1 支提案輔助影片', '其他'] }
+          ]
+        };
+
+        // --- 主程式 ---
+        function App() {
+          const [activeSection, setActiveSection] = useState(SECTIONS[0].id);
+          const [answers, setAnswers] = useState({});
+
+          const handleSelect = (qId, option, type) => {
+            setAnswers(prev => {
+              const current = prev[qId] || [];
+              if (type === 'radio') {
+                return { ...prev, [qId]: [option] };
+              } else {
+                if (current.includes(option)) {
+                  return { ...prev, [qId]: current.filter(o => o !== option) };
+                } else {
+                  return { ...prev, [qId]: [...current, option] };
+                }
+              }
+            });
+          };
+
+          const handleTextChange = (qId, text) => {
+            setAnswers(prev => ({ ...prev, [qId]: text }));
+          };
+
+          const renderQuestion = (q) => {
+            if (q.type === 'header') {
+              return (
+                <div key={q.id} className="mt-8 mb-4 border-b border-slate-200 pb-2">
+                  <h3 className="text-xl font-bold text-slate-800">{q.text}</h3>
+                </div>
+              );
+            }
+
+            const hasOther = q.options.includes('其他');
+            const isOtherSelected = Array.isArray(answers[q.id]) && answers[q.id].includes('其他');
+
+            return (
+              <div key={q.id} className="mb-6 lg:mb-8 p-5 lg:p-6 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                <h4 className="text-base font-semibold text-slate-800 mb-4">{q.text}</h4>
+                
+                {q.type === 'textarea' ? (
+                  <textarea
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-h-[100px] text-sm outline-none"
+                    placeholder="請簡述您的想法..."
+                    value={answers[q.id] || ''}
+                    onChange={(e) => handleTextChange(q.id, e.target.value)}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {q.options.map(option => {
+                      const isSelected = Array.isArray(answers[q.id]) && answers[q.id].includes(option);
+                      const isOther = option === '其他';
+                      
+                      return (
+                        <div key={option} className={`flex flex-col sm:flex-row sm:items-start ${isOther && isSelected ? 'col-span-1 md:col-span-2' : ''}`}>
+                          <button
+                            onClick={() => handleSelect(q.id, option, q.type)}
+                            className={`w-full flex items-center p-3 rounded-lg border text-left transition-colors ${
+                              isSelected 
+                                ? 'bg-blue-50 border-blue-600 text-blue-800' 
+                                : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                            }`}
+                          >
+                            <div className={`w-5 h-5 flex-shrink-0 mr-3 border flex items-center justify-center ${
+                              q.type === 'radio' ? 'rounded-full' : 'rounded'
+                            } ${isSelected ? 'border-blue-600 bg-blue-600' : 'border-slate-300'}`}>
+                              {isSelected && <IconCheck className="w-3.5 h-3.5 text-white" />}
+                            </div>
+                            <span className="text-sm font-medium">{option}</span>
+                          </button>
+                          {isOther && isSelected && (
+                            <input
+                              type="text"
+                              className="mt-2 sm:mt-0 sm:ml-3 w-full sm:flex-1 p-3 sm:p-2 border rounded-lg sm:rounded-none sm:border-0 sm:border-b border-slate-300 focus:border-blue-500 focus:outline-none bg-white sm:bg-transparent text-sm shadow-sm sm:shadow-none"
+                              placeholder="請說明您的其他想法..."
+                              autoFocus
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          };
+
+          const getCompletedCount = (sectionId) => {
+            const sectionQs = QUESTIONS[sectionId].filter(q => q.type !== 'header');
+            return sectionQs.filter(q => answers[q.id] && answers[q.id].length > 0).length;
+          };
+
+          const handleExportCSV = () => {
+            let csvContent = '\uFEFF'; 
+            csvContent += '區塊,題目編號與內容,填寫結果\n';
+
+            const escapeCSV = (str) => {
+              if (str === null || str === undefined) return '"未填寫"';
+              const strVal = String(str);
+              return `"${strVal.replace(/"/g, '""')}"`;
+            };
+
+            SECTIONS.forEach(section => {
+              const sectionQs = QUESTIONS[section.id].filter(q => q.type !== 'header');
+              
+              sectionQs.forEach(q => {
+                let answerText = '未填寫';
+                const ans = answers[q.id];
+
+                if (ans) {
+                  if (Array.isArray(ans)) {
+                    if (ans.length > 0) answerText = ans.join('; ');
+                  } else if (typeof ans === 'string' && ans.trim() !== '') {
+                    answerText = ans.trim();
+                  }
+                }
+
+                csvContent += `${escapeCSV(section.title)},${escapeCSV(q.text)},${escapeCSV(answerText)}\n`;
+              });
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `地平線AI影片需求盤點_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+          };
+
+          const totalQuestions = QUESTIONS[activeSection].filter(q => q.type !== 'header').length;
+
+          return (
+            <div className="min-h-screen font-sans text-slate-900 flex overflow-x-hidden">
+              {/* Sidebar - Desktop Only */}
+              <aside className="w-72 bg-white border-r border-slate-200 flex-shrink-0 flex flex-col fixed h-full z-20 hidden lg:flex">
+                <div className="p-6 border-b border-slate-200">
+                  <h1 className="text-xl font-bold text-slate-900 leading-tight">地平線 AI 影片<br/>需求盤點問卷</h1>
+                  <p className="text-xs text-slate-500 mt-2">v1.0 數位評估版</p>
+                </div>
+                <div className="flex-1 overflow-y-auto py-4">
+                  <nav className="space-y-1 px-3">
+                    {SECTIONS.map((section) => {
+                      const Icon = section.icon;
+                      const isActive = activeSection === section.id;
+                      const isCompleted = getCompletedCount(section.id) > 0;
+                      
+                      return (
+                        <button
+                          key={section.id}
+                          onClick={() => setActiveSection(section.id)}
+                          className={`w-full flex items-center justify-between px-3 py-3 rounded-lg text-left transition-colors ${
+                            isActive 
+                              ? 'bg-blue-50 text-blue-700 font-semibold' 
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-blue-600' : 'text-slate-400'}`} />
+                            <span className="text-sm">{section.title}</span>
+                          </div>
+                          {isCompleted && !isActive && <IconCheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </nav>
+                </div>
+                <div className="p-4 border-t border-slate-200">
+                  <button 
+                    onClick={handleExportCSV}
+                    className="w-full bg-slate-900 text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-slate-800 transition-colors flex items-center justify-center space-x-2 shadow-sm"
+                  >
+                    <span>輸出 CSV 報告</span>
+                    <IconDownload className="w-4 h-4" />
+                  </button>
+                </div>
+              </aside>
+
+              {/* Main Content */}
+              <main className="flex-1 lg:ml-72 flex flex-col h-screen w-full relative">
+                {/* Mobile Header - Sticky with shadow */}
+                <div className="lg:hidden bg-white border-b border-slate-200 p-4 sticky top-0 z-30 shadow-sm flex items-center justify-between">
+                  <h1 className="text-lg font-bold text-slate-900 truncate pr-2">AI 影片需求盤點</h1>
+                  <div className="relative flex-shrink-0">
+                    <select 
+                      value={activeSection}
+                      onChange={(e) => setActiveSection(e.target.value)}
+                      className="appearance-none bg-slate-50 border border-slate-200 text-sm font-medium text-slate-700 rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-blue-500 max-w-[140px] truncate"
+                    >
+                      {SECTIONS.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}
+                    </select>
+                    <IconChevronRight className="w-4 h-4 text-slate-400 absolute right-2 top-1/2 -translate-y-1/2 rotate-90 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 pb-20 lg:pb-10">
+                  <div className="max-w-3xl mx-auto">
+                    {/* Section Header */}
+                    <div className="mb-6 lg:mb-8">
+                      <div className="flex items-center space-x-3 mb-2">
+                        {React.createElement(SECTIONS.find(s => s.id === activeSection).icon, { className: "w-7 h-7 lg:w-8 lg:h-8 text-blue-600 flex-shrink-0" })}
+                        <h2 className="text-xl lg:text-2xl font-bold text-slate-900">
+                          {SECTIONS.find(s => s.id === activeSection).title}
+                        </h2>
+                      </div>
+                      <p className="text-slate-500 text-sm">
+                        {SECTIONS.find(s => s.id === activeSection).desc}
+                      </p>
+                      
+                      {/* Progress Indicator */}
+                      <div className="mt-4 flex items-center space-x-4">
+                        <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-blue-500 transition-all duration-300"
+                            style={{ width: `${(getCompletedCount(activeSection) / totalQuestions) * 100}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-medium text-slate-500 whitespace-nowrap">
+                          {getCompletedCount(activeSection)} / {totalQuestions} 已填寫
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Questions Form */}
+                    <div className="space-y-4 lg:space-y-6">
+                      {QUESTIONS[activeSection].map(renderQuestion)}
+                    </div>
+
+                    {/* Bottom Navigation - RWD Stacked on Mobile */}
+                    <div className="mt-8 pt-6 border-t border-slate-200 flex flex-col-reverse sm:flex-row justify-between gap-3 sm:gap-4">
+                      <button 
+                        onClick={() => {
+                          const currIdx = SECTIONS.findIndex(s => s.id === activeSection);
+                          if(currIdx > 0) setActiveSection(SECTIONS[currIdx - 1].id);
+                          window.scrollTo(0, 0); 
+                        }}
+                        className={`w-full sm:w-auto px-6 py-3 sm:py-2 text-sm font-medium rounded-lg border flex items-center justify-center transition-colors ${
+                          SECTIONS.findIndex(s => s.id === activeSection) === 0 
+                          ? 'text-slate-300 border-slate-200 cursor-not-allowed' 
+                          : 'text-slate-600 border-slate-300 hover:bg-slate-50 active:bg-slate-100'
+                        }`}
+                        disabled={SECTIONS.findIndex(s => s.id === activeSection) === 0}
+                      >
+                        上一區塊
+                      </button>
+                      
+                      <button 
+                        onClick={() => {
+                          const currIdx = SECTIONS.findIndex(s => s.id === activeSection);
+                          if(currIdx < SECTIONS.length - 1) {
+                            setActiveSection(SECTIONS[currIdx + 1].id);
+                            window.scrollTo(0, 0); 
+                          } else {
+                            handleExportCSV();
+                          }
+                        }}
+                        className={`w-full sm:w-auto px-6 py-3 sm:py-2 text-sm font-medium rounded-lg flex items-center justify-center space-x-2 transition-colors ${
+                          SECTIONS.findIndex(s => s.id === activeSection) === SECTIONS.length - 1
+                          ? 'bg-blue-600 text-white shadow-sm hover:bg-blue-700 active:bg-blue-800' 
+                          : 'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-700'
+                        }`}
+                      >
+                        <span>{SECTIONS.findIndex(s => s.id === activeSection) === SECTIONS.length - 1 ? '輸出 CSV 報告' : '下一區塊'}</span>
+                        {SECTIONS.findIndex(s => s.id === activeSection) === SECTIONS.length - 1 ? (
+                          <IconDownload className="w-4 h-4 ml-1" />
+                        ) : (
+                          <IconChevronRight className="w-4 h-4 ml-1 hidden sm:block" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </main>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
